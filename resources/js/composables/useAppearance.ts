@@ -1,6 +1,9 @@
 import { onMounted, ref } from 'vue';
+import { useEventBus } from '@vueuse/core';
 
 type Appearance = 'light' | 'dark' | 'system';
+
+const appearanceBus = useEventBus('appearance');
 
 export function updateTheme(value: Appearance) {
     if (value === 'system') {
@@ -9,6 +12,7 @@ export function updateTheme(value: Appearance) {
     } else {
         document.documentElement.classList.toggle('dark', value === 'dark');
     }
+    appearanceBus.emit(value);
 }
 
 const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
@@ -19,11 +23,8 @@ const handleSystemThemeChange = () => {
 };
 
 export function initializeTheme() {
-    // Initialize theme from saved preference or default to system...
     const savedAppearance = localStorage.getItem('appearance') as Appearance | null;
     updateTheme(savedAppearance || 'system');
-
-    // Set up system theme change listener...
     mediaQuery.addEventListener('change', handleSystemThemeChange);
 }
 
@@ -32,9 +33,7 @@ export function useAppearance() {
 
     onMounted(() => {
         initializeTheme();
-
         const savedAppearance = localStorage.getItem('appearance') as Appearance | null;
-
         if (savedAppearance) {
             appearance.value = savedAppearance;
         }

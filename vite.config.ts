@@ -23,6 +23,7 @@ export default defineConfig({
     resolve: {
         alias: {
             '@': path.resolve(__dirname, './resources/js'),
+            '@assets': path.resolve(__dirname, './resources/assets'),
         },
     },
     css: {
