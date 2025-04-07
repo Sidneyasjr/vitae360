@@ -62,7 +62,7 @@ class UserController extends Controller
         ]);
 
         // Atribuir permissões básicas ao novo usuário
-        $user->givePermissionTo(['dashboard.access', 'profile.edit']);
+        // $user->givePermissionTo(['dashboard.access', 'profile.edit']);
 
         return redirect()->route('users.index')->with('message', 'Usuário criado com sucesso.');
     }
