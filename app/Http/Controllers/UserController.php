@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -118,8 +119,7 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        // Impedir exclusão do próprio usuário
-        if ($user->id === auth()->id) {
+        if ($user->id === Auth::id()) {
             return redirect()->back()->with('error', 'Você não pode excluir seu próprio usuário.');
         }
 
