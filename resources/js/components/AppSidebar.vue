@@ -2,12 +2,16 @@
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/vue3';
+import { type NavItem, type SharedData } from '@/types';
+import { Link, usePage } from '@inertiajs/vue3';
 import { LayoutGrid, Users } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
-const mainNavItems: NavItem[] = [
+const page = usePage<SharedData>();
+const dynamicMenuItems = page.props.menu?.items || [];
+
+// Itens estáticos de menu (sempre exibidos)
+const staticMenuItems: NavItem[] = [
     {
         title: 'Dashboard',
         href: '/dashboard',
@@ -19,6 +23,9 @@ const mainNavItems: NavItem[] = [
         icon: Users,
     },
 ];
+
+// Combinar itens estáticos e dinâmicos
+const mainNavItems = [...staticMenuItems, ...dynamicMenuItems];
 </script>
 
 <template>

@@ -54,12 +54,15 @@ class UserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        User::create([
+        $user = User::create([
             'name' => $validated['name'],
             'username' => $validated['username'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
         ]);
+
+        // Atribuir permissões básicas ao novo usuário
+        $user->givePermissionTo(['dashboard.access', 'profile.edit']);
 
         return redirect()->route('users.index')->with('message', 'Usuário criado com sucesso.');
     }

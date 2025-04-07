@@ -21,6 +21,9 @@ export interface SharedData extends PageProps {
     name: string;
     quote: { message: string; author: string };
     auth: Auth;
+    menu?: {
+        items: NavItem[];
+    };
 }
 
 export interface User {

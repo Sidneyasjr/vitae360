@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Services\MenuService;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -38,12 +39,22 @@ class HandleInertiaRequests extends Middleware
     {
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
 
+        // Obter itens de menu dinâmicos
+        $menuItems = [];
+        if ($request->user()) {
+            $menuService = new MenuService();
+            $menuItems = $menuService->getUserMenu();
+        }
+
         return [
             ...parent::share($request),
             'name' => config('app.name'),
             'quote' => ['message' => trim($message), 'author' => trim($author)],
             'auth' => [
                 'user' => $request->user(),
+            ],
+            'menu' => [
+                'items' => $menuItems,
             ],
         ];
     }
