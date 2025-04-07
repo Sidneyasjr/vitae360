@@ -3,6 +3,8 @@ import AppContent from '@/components/AppContent.vue';
 import AppShell from '@/components/AppShell.vue';
 import AppSidebar from '@/components/AppSidebar.vue';
 import AppSidebarHeader from '@/components/AppSidebarHeader.vue';
+import AppNotification from '@/components/AppNotification.vue';
+import Toaster from '@/components/Toaster.vue';
 import type { BreadcrumbItemType } from '@/types';
 
 interface Props {
@@ -21,5 +23,7 @@ withDefaults(defineProps<Props>(), {
             <AppSidebarHeader :breadcrumbs="breadcrumbs" />
             <slot />
         </AppContent>
+        <AppNotification />
+        <Toaster />
     </AppShell>
 </template>

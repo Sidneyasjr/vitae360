@@ -65,7 +65,7 @@ class UserController extends Controller
         // Atribuir permissões básicas ao novo usuário
         // $user->givePermissionTo(['dashboard.access', 'profile.edit']);
 
-        return redirect()->route('users.index')->with('message', 'Usuário criado com sucesso.');
+        return redirect()->route('users.index')->with('success', 'Usuário criado com sucesso.');
     }
 
     /**
@@ -111,7 +111,7 @@ class UserController extends Controller
             ]);
         }
 
-        return redirect()->route('users.index')->with('message', 'Usuário atualizado com sucesso.');
+        return redirect()->route('users.index')->with('success', 'Usuário atualizado com sucesso.');
     }
 
     /**
@@ -125,6 +125,6 @@ class UserController extends Controller
 
         $user->delete();
 
-        return redirect()->route('users.index')->with('message', 'Usuário excluído com sucesso.');
+        return redirect()->route('users.index')->with('success', 'Usuário excluído com sucesso.');
     }
 }

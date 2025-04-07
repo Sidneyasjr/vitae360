@@ -62,7 +62,7 @@ class PermissionController extends Controller
         Permission::create($validated);
 
         return redirect()->route('permissions.index')
-            ->with('message', 'Permissão criada com sucesso.');
+            ->with('success', 'Permissão criada com sucesso.');
     }
 
     /**
@@ -100,7 +100,7 @@ class PermissionController extends Controller
         $permission->update($validated);
 
         return redirect()->route('permissions.index')
-            ->with('message', 'Permissão atualizada com sucesso.');
+            ->with('success', 'Permissão atualizada com sucesso.');
     }
 
     /**
@@ -111,6 +111,6 @@ class PermissionController extends Controller
         $permission->delete();
 
         return redirect()->route('permissions.index')
-            ->with('message', 'Permissão excluída com sucesso.');
+            ->with('success', 'Permissão excluída com sucesso.');
     }
 }

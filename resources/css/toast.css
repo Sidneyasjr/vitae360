@@ -1,0 +1,57 @@
+/* Define as animações para os toasts */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes slideInFromTop {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes slideInFromBottom {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes slideOutToRight {
+  from { transform: translateX(0); }
+  to { transform: translateX(100%); }
+}
+
+/* Animações para o estado open/closed do toast */
+.data-\[state\=open\]\:animate-in {
+  animation: fadeIn 150ms ease-out;
+}
+
+.data-\[state\=closed\]\:animate-out {
+  animation: fadeOut 150ms ease-in;
+}
+
+.data-\[state\=closed\]\:fade-out-80 {
+  animation: fadeOut 200ms ease-in forwards;
+}
+
+.data-\[state\=open\]\:slide-in-from-top-full {
+  animation: slideInFromTop 150ms ease-out;
+}
+
+.data-\[state\=open\]\:sm\:slide-in-from-bottom-full {
+  @media (min-width: 640px) {
+    animation: slideInFromBottom 150ms ease-out;
+  }
+}
+
+.data-\[state\=closed\]\:slide-out-to-right-full {
+  animation: slideOutToRight 150ms ease-in forwards;
+}
+
+/* Z-index para garantir que os toasts fiquem acima de outros elementos */
+.z-\[100\] {
+  z-index: 100;
+}

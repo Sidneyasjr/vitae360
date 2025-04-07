@@ -56,6 +56,13 @@ class HandleInertiaRequests extends Middleware
             'menu' => [
                 'items' => $menuItems,
             ],
+            'flash' => [
+                'message' => session('message'),
+                'error' => session('error'),
+                'success' => session('success'),
+                'warning' => session('warning'),
+                'info' => session('info'),
+            ],
         ];
     }
 }
