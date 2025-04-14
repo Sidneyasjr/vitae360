@@ -4,7 +4,7 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-import { LayoutGrid, Users } from 'lucide-vue-next';
+import { LayoutGrid, Users, Building2 } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 const page = usePage<SharedData>();
@@ -21,6 +21,11 @@ const staticMenuItems: NavItem[] = [
         title: 'Usuários',
         href: '/users',
         icon: Users,
+    },
+    {
+        title: 'Empresas',
+        href: '/companies',
+        icon: Building2,
     },
 ];
 

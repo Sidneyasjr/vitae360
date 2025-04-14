@@ -11,33 +11,13 @@ class Company extends Model
     use HasFactory, Searchable;
 
     protected $fillable = [
-        'tax_id',
-        'company_name',
-        'trade_name',
-        'contact_person',
-        'position',
-        'phone',
-        'phone2',
-        'contact_email',
-        'billing_email',
-        'zip_code',
-        'address',
-        'number',
-        'neighborhood',
-        'state',
-        'city',
-        'lead',
-        'interest',
-        'segment',
-        'legal_representative_name',
-        'legal_representative_tax_id',
-        'legal_representative_email'
+        'name',
+        'cnpj',
+        'email',
     ];
 
     protected $casts = [
-        'tax_id' => 'string',
-        'zip_code' => 'string',
-        'legal_representative_tax_id' => 'string'
+        'cnpj' => 'string',
     ];
 
     /**
@@ -46,12 +26,8 @@ class Company extends Model
      * @var array
      */
     protected $searchable = [
-        'tax_id',
-        'company_name',
-        'trade_name',
-        'contact_person',
-        'contact_email',
-        'city',
-        'state'
+        'name',
+        'cnpj',
+        'email',
     ];
 }

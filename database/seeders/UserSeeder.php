@@ -10,6 +10,26 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
+        // Criar usuário administrador
+        $admin = User::create([
+            'name' => 'Administrador',
+            'username' => 'admin',
+            'email' => 'admin@example.com',
+            'email_verified_at' => now(),
+            'password' => bcrypt('password'),
+            'remember_token' => Str::random(10),
+            'is_admin' => true,
+            'is_active' => true,
+        ]);
+
+        // Atribuir permissões ao administrador
+        $admin->givePermissionTo([
+            'companies.index',
+            'companies.create',
+            'companies.edit',
+            'companies.destroy',
+        ]);
+
         // Criar usuários com dados fixos
         $names = [
             'João Silva', 'Maria Santos', 'Pedro Oliveira', 'Ana Costa', 'Lucas Pereira',

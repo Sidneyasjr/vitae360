@@ -5,15 +5,24 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CompanyRequest;
 use App\Models\Company;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class CompanyController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $companies = Company::query()
+            ->search($request->search, ['name', 'cnpj', 'email'])
+            ->order('name')
+            ->paginateResults(10);
+
+        return Inertia::render('Companies/Index', [
+            'companies' => $companies,
+            'filters' => $request->only(['search']),
+        ]);
     }
 
     /**
