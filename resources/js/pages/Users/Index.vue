@@ -14,6 +14,16 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import {
+  Pagination,
+  PaginationEllipsis,
+  PaginationFirst,
+  PaginationLast,
+  PaginationList,
+  PaginationListItem,
+  PaginationNext,
+  PaginationPrev,
+} from '@/components/ui/pagination';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem, type User } from '@/types';
 import { debounce } from '@/lib/utils';
@@ -21,15 +31,17 @@ import { debounce } from '@/lib/utils';
 interface Props {
   users: {
     data: User[];
-    links: any[];
-    meta: {
-      current_page: number;
-      from: number;
-      last_page: number;
-      per_page: number;
-      to: number;
-      total: number;
-    };
+    links: {
+      url: string | null;
+      label: string;
+      active: boolean;
+    }[];
+    current_page: number;
+    from: number;
+    last_page: number;
+    per_page: number;
+    to: number;
+    total: number;
   };
   filters: {
     search: string;
@@ -61,7 +73,7 @@ const closeDeleteDialog = () => {
 
 const handleDelete = () => {
   if (userToDelete.value) {
-    router.delete(route('users.destroy', userToDelete.value.id), {
+    router.delete(route('users.destroy', { user: userToDelete.value.id }), {
       onSuccess: () => {
         closeDeleteDialog();
       },
@@ -76,6 +88,14 @@ const debouncedSearch = debounce(() => {
     { preserveState: true, preserveScroll: true }
   );
 }, 300);
+
+const handlePageChange = (page: number) => {
+  router.get(
+    route('users.index'),
+    { page },
+    { preserveState: true, preserveScroll: true }
+  );
+};
 </script>
 
 <template>
@@ -134,7 +154,7 @@ const debouncedSearch = debounce(() => {
                   <td class="p-4 text-right align-middle">
                     <div class="flex items-center justify-end gap-2">
                       <Button variant="ghost" size="icon" as-child>
-                        <Link :href="route('users.edit', user.id)">
+                        <Link :href="route('users.edit', { user: user.id })">
                           <Edit class="h-4 w-4" />
                         </Link>
                       </Button>
@@ -162,28 +182,36 @@ const debouncedSearch = debounce(() => {
         </div>
 
         <!-- Paginação -->
-        <div v-if="users.meta && users.meta.last_page > 1" class="flex items-center justify-between">
+        <div v-if="users.last_page > 1" class="flex items-center justify-between">
           <div class="text-sm text-muted-foreground">
-            Mostrando {{ users.meta.from || 0 }} a {{ users.meta.to || 0 }} de {{ users.meta.total || 0 }} usuários
+            Mostrando {{ users.from || 0 }} a {{ users.to || 0 }} de {{ users.total || 0 }} usuários
           </div>
-          <div class="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              :disabled="!users.meta.current_page || users.meta.current_page === 1"
-              @click="router.get(users.links?.[0]?.url || '#')"
-            >
-              Anterior
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              :disabled="!users.meta.current_page || users.meta.current_page === users.meta.last_page"
-              @click="router.get(users.links?.[users.links?.length - 1]?.url || '#')"
-            >
-              Próximo
-            </Button>
-          </div>
+          <Pagination
+            v-slot="{ page }"
+            :items-per-page="users.per_page"
+            :total="users.total"
+            :sibling-count="1"
+            show-edges
+            :default-page="users.current_page"
+            @update:page="handlePageChange"
+          >
+            <PaginationList v-slot="{ items }" class="flex items-center gap-1">
+              <PaginationFirst />
+              <PaginationPrev />
+
+              <template v-for="(item, index) in items">
+                <PaginationListItem v-if="item.type === 'page'" :key="index" :value="item.value" as-child>
+                  <Button class="w-10 h-10 p-0" :variant="item.value === page ? 'default' : 'outline'">
+                    {{ item.value }}
+                  </Button>
+                </PaginationListItem>
+                <PaginationEllipsis v-else :key="item.type" :index="index" />
+              </template>
+
+              <PaginationNext />
+              <PaginationLast />
+            </PaginationList>
+          </Pagination>
         </div>
       </div>
 
