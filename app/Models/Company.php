@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\Searchable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Company extends Model
 {
-    use HasFactory;
+    use HasFactory, Searchable;
 
     protected $fillable = [
         'tax_id',
@@ -37,5 +38,20 @@ class Company extends Model
         'tax_id' => 'string',
         'zip_code' => 'string',
         'legal_representative_tax_id' => 'string'
+    ];
+
+    /**
+     * Campos que podem ser pesquisados
+     *
+     * @var array
+     */
+    protected $searchable = [
+        'tax_id',
+        'company_name',
+        'trade_name',
+        'contact_person',
+        'contact_email',
+        'city',
+        'state'
     ];
 }

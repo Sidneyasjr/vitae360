@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,16 +17,9 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $users = User::query()
-            ->when($request->search, function ($query, $search) {
-                $query->where(function ($query) use ($search) {
-                    $query->where('name', 'like', "%{$search}%")
-                        ->orWhere('username', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%");
-                });
-            })
-            ->orderBy('name')
-            ->paginate(10)
-            ->withQueryString();
+            ->search($request->search, ['name', 'username', 'email'])
+            ->order('name')
+            ->paginateResults(10);
 
         return Inertia::render('Users/Index', [
             'users' => $users,
@@ -46,14 +38,9 @@ class UserController extends Controller
     /**
      * Store a newly created user.
      */
-    public function store(Request $request)
+    public function store(UserRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'username' => 'required|string|max:255|unique:users',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+        $validated = $request->validated();
 
         $user = User::create([
             'name' => $validated['name'],
@@ -61,9 +48,6 @@ class UserController extends Controller
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
         ]);
-
-        // Atribuir permissões básicas ao novo usuário
-        // $user->givePermissionTo(['dashboard.access', 'profile.edit']);
 
         return redirect()->route('users.index')->with('success', 'Usuário criado com sucesso.');
     }
@@ -91,25 +75,15 @@ class UserController extends Controller
     /**
      * Update the specified user.
      */
-    public function update(Request $request, User $user)
+    public function update(UserRequest $request, User $user)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'username' => ['required', 'string', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-        ]);
+        $validated = $request->validated();
+
+        if (isset($validated['password'])) {
+            $validated['password'] = Hash::make($validated['password']);
+        }
 
         $user->update($validated);
-
-        if ($request->filled('password')) {
-            $request->validate([
-                'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            ]);
-
-            $user->update([
-                'password' => Hash::make($request->password),
-            ]);
-        }
 
         return redirect()->route('users.index')->with('success', 'Usuário atualizado com sucesso.');
     }
