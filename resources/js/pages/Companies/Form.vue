@@ -1,21 +1,12 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button'
-import {
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { toast } from '@/components/ui/toast'
-import { vAutoAnimate } from '@formkit/auto-animate/vue'
-import { toTypedSchema } from '@vee-validate/zod'
-import { useForm } from 'vee-validate'
-import * as z from 'zod'
-import { router } from '@inertiajs/vue3'
+import { Label } from '@/components/ui/label'
+import InputError from '@/components/InputError.vue'
+import { router, useForm } from '@inertiajs/vue3'
 import { type Company } from '@/types'
+import { LoaderCircle } from 'lucide-vue-next'
 
 interface Props {
   company?: Company
@@ -23,88 +14,107 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const formSchema = toTypedSchema(z.object({
-  name: z.string().min(2, 'O nome deve ter pelo menos 2 caracteres').max(255, 'O nome deve ter no máximo 255 caracteres'),
-  cnpj: z.string().length(18, 'O CNPJ deve ter 14 caracteres'),
-  email: z.string().email('E-mail inválido').max(255, 'O e-mail deve ter no máximo 255 caracteres'),
-}))
-
-const { isFieldDirty, handleSubmit } = useForm({
-  validationSchema: formSchema,
-  initialValues: props.company,
+const form = useForm({
+  name: props.company?.name || '',
+  cnpj: props.company?.cnpj || '',
+  email: props.company?.email || '',
 })
 
-const onSubmit = handleSubmit((values) => {
+const submit = () => {
   if (props.company) {
-    router.put(route('companies.update', { company: props.company.id }), values, {
+    form.put(route('companies.update', { company: props.company.id }), {
       onSuccess: () => {
         toast({
           title: 'Empresa atualizada com sucesso!',
           description: 'Os dados da empresa foram atualizados.',
+          class: 'bg-green-500',
+        })
+      },
+      onError: () => {
+        toast({
+          title: 'Erro ao atualizar empresa',
+          description: 'Verifique os dados e tente novamente.',
+          variant: 'destructive',
         })
       },
     })
   } else {
-    router.post(route('companies.store'), values, {
+    form.post(route('companies.store'), {
       onSuccess: () => {
         toast({
           title: 'Empresa criada com sucesso!',
           description: 'A empresa foi cadastrada no sistema.',
         })
       },
+      onError: () => {
+        toast({
+          title: 'Erro ao criar empresa',
+          description: 'Verifique os dados e tente novamente.',
+          variant: 'destructive',
+        })
+      },
     })
   }
-})
+}
 </script>
 
 <template>
-  <form class="w-2/3 space-y-6" @submit="onSubmit">
-    <FormField v-slot="{ componentField }" name="name" :validate-on-blur="!isFieldDirty">
-      <FormItem v-auto-animate>
-        <FormLabel>Nome</FormLabel>
-        <FormControl>
-          <Input type="text" placeholder="Nome da empresa" v-bind="componentField" />
-        </FormControl>
-        <FormDescription>
-          Nome completo da empresa
-        </FormDescription>
-        <FormMessage />
-      </FormItem>
-    </FormField>
+  <form class="w-2/3 space-y-6" @submit.prevent="submit">
+    <div class="grid gap-6">
+      <div class="grid gap-2">
+        <Label for="name">Nome</Label>
+        <Input 
+          id="name" 
+          type="text" 
+          name="name" 
+          v-model="form.name" 
+          class="mt-1 block w-full"
+          placeholder="Nome da empresa" 
+          autofocus
+        />
+        <InputError :message="form.errors.name" class="mt-2" />
+        <p class="text-xs text-muted-foreground">Nome completo da empresa</p>
+      </div>
 
-    <FormField v-slot="{ componentField }" name="cnpj" :validate-on-blur="!isFieldDirty">
-      <FormItem v-auto-animate>
-        <FormLabel>CNPJ</FormLabel>
-        <FormControl>
-          <Input type="text" placeholder="00.000.000/0000-00" v-mask="'##.###.###/####-##'" v-bind="componentField" />
-        </FormControl>
-        <FormDescription>
-          CNPJ da empresa (apenas números)
-        </FormDescription>
-        <FormMessage />
-      </FormItem>
-    </FormField>
+      <div class="grid gap-2">
+        <Label for="cnpj">CNPJ</Label>
+        <Input 
+          id="cnpj" 
+          type="text" 
+          name="cnpj" 
+          v-model="form.cnpj" 
+          v-mask="'##.###.###/####-##'"
+          :mask-options="{ reverse: false }"
+          class="mt-1 block w-full"
+          placeholder="00.000.000/0000-00" 
+        />
+        <InputError :message="form.errors.cnpj" class="mt-2" />
+        <p class="text-xs text-muted-foreground">CNPJ da empresa (apenas números)</p>
+      </div>
 
-    <FormField v-slot="{ componentField }" name="email" :validate-on-blur="!isFieldDirty">
-      <FormItem v-auto-animate>
-        <FormLabel>E-mail</FormLabel>
-        <FormControl>
-          <Input type="email" placeholder="empresa@exemplo.com" v-bind="componentField" />
-        </FormControl>
-        <FormDescription>
-          E-mail de contato da empresa
-        </FormDescription>
-        <FormMessage />
-      </FormItem>
-    </FormField>
+      <div class="grid gap-2">
+        <Label for="email">E-mail</Label>
+        <Input 
+          id="email" 
+          type="email" 
+          name="email" 
+          v-model="form.email" 
+          class="mt-1 block w-full"
+          placeholder="empresa@exemplo.com" 
+        />
+        <InputError :message="form.errors.email" class="mt-2" />
+        <p class="text-xs text-muted-foreground">E-mail de contato da empresa</p>
+      </div>
 
-    <div class="flex justify-end gap-4">
-      <Button type="button" variant="outline" @click="router.visit(route('companies.index'))">
-        Cancelar
-      </Button>
-      <Button type="submit">
-        {{ props.company ? 'Atualizar' : 'Criar' }}
-      </Button>
+      <div class="flex justify-end gap-4 mt-4">
+        <Button type="button" variant="outline" @click="router.visit(route('companies.index'))">
+          Cancelar
+        </Button>
+        <Button type="submit" :disabled="form.processing" class="gap-2">
+          <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
+          {{ props.company ? 'Atualizar' : 'Criar' }}
+        </Button>
+      </div>
     </div>
   </form>
 </template>

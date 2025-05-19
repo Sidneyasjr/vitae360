@@ -3,10 +3,18 @@ import { computed, onMounted } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 import { useToast } from '@/components/ui/toast/use-toast';
 
+interface Flash {
+  error?: string;
+  success?: string;
+  warning?: string;
+  info?: string;
+  message?: string;
+}
+
 const page = usePage();
 const { toast } = useToast();
 
-const flash = computed(() => page.props.flash);
+const flash = computed<Flash>(() => page.props.flash as Flash);
 
 onMounted(() => {
     if (flash.value.error) {
@@ -25,14 +33,14 @@ onMounted(() => {
     if (flash.value.warning) {
         toast({
             description: flash.value.warning,
-            variant: 'warning',
+            variant: 'default',
             class: 'bg-yellow-500 text-white border-0 rounded-lg shadow-lg',
         });
     }
     if (flash.value.info) {
         toast({
             description: flash.value.info,
-            variant: 'info',
+            variant: 'default',
             class: 'bg-blue-500 text-white border-0 rounded-lg shadow-lg',
         });
     }

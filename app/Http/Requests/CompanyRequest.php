@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class CompanyRequest extends FormRequest
 {
@@ -23,7 +24,12 @@ class CompanyRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'cnpj' => ['required', 'string', 'size:14', 'unique:companies,cnpj'],
+            'cnpj' => [
+                'required',
+                'string',
+                'size:18',
+                Rule::unique('companies', 'cnpj')->ignore(optional(request()->route('company'))->id)
+            ],
             'email' => ['required', 'email', 'max:255'],
         ];
     }

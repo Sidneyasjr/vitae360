@@ -9,18 +9,7 @@ import { initializeTheme } from './composables/useAppearance';
 import Toaster from '@/components/Toaster.vue';
 import VueTheMask from 'vue-the-mask'
 
-// Extend ImportMeta interface for Vite...
-declare module 'vite/client' {
-    interface ImportMetaEnv {
-        readonly VITE_APP_NAME: string;
-        [key: string]: string | boolean | undefined;
-    }
-
-    interface ImportMeta {
-        readonly env: ImportMetaEnv;
-        readonly glob: <T>(pattern: string) => Record<string, () => Promise<T>>;
-    }
-}
+type VueMaskPlugin = any;
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -30,7 +19,7 @@ createInertiaApp({
     setup({ el, App, props, plugin }) {
         const app = createApp({ render: () => h(App, props) })
             .use(plugin)
-            .use(VueTheMask)
+            .use(VueTheMask as VueMaskPlugin)
             .use(ZiggyVue);
 
         // Adiciona o Toaster como componente global
