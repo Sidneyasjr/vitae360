@@ -30,7 +30,7 @@ class CompanyController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('Companies/Create');
     }
 
     /**
@@ -38,7 +38,10 @@ class CompanyController extends Controller
      */
     public function store(CompanyRequest $request)
     {
-        //
+        Company::create($request->validated());
+
+        return redirect()->route('companies.index')
+            ->with('success', 'Empresa criada com sucesso!');
     }
 
     /**
@@ -54,7 +57,9 @@ class CompanyController extends Controller
      */
     public function edit(Company $company)
     {
-        //
+        return Inertia::render('Companies/Edit', [
+            'company' => $company,
+        ]);
     }
 
     /**
@@ -62,7 +67,10 @@ class CompanyController extends Controller
      */
     public function update(CompanyRequest $request, Company $company)
     {
-        //
+        $company->update($request->validated());
+
+        return redirect()->route('companies.index')
+            ->with('success', 'Empresa atualizada com sucesso!');
     }
 
     /**
@@ -70,6 +78,9 @@ class CompanyController extends Controller
      */
     public function destroy(Company $company)
     {
-        //
+        $company->delete();
+
+        return redirect()->route('companies.index')
+            ->with('success', 'Empresa excluída com sucesso!');
     }
 }
